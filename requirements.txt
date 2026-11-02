@@ -1,0 +1,8 @@
+scapy>=2.5.0      # Wi-Fi sniffer (probe requesty, vyžaduje root)
+bleak>=0.21.0     # Bluetooth Low Energy
+pyserial>=3.5     # GPS přes UART
+gpsd-py3>=0.3.0   # GPS přes gpsd
+pyyaml>=6.0
+flask>=3.0.0      # webový dashboard
+requests>=2.31.0  # ntfy / Pushbullet
+pytest>=8.0.0

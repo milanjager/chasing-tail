@@ -1,0 +1,56 @@
+# Chasing Your Tail — konfigurace
+# Zkopírujte jako config.local.yaml pro lokální přepsání
+
+wifi:
+  interface: wlan1          # Wi-Fi rozhraní v monitor mode (ne wlan0!)
+  channel_hop: true         # přepínat kanály 1–14
+  hop_interval: 0.5         # sekund na každém kanálu
+
+bluetooth:
+  enabled: true
+  scan_duration: 5          # sekund každý scan
+  scan_interval: 10         # sekund mezi skeny
+
+gps:
+  enabled: true
+  device: gpsd              # "gpsd" (doporučeno) nebo přímo /dev/ttyACM0
+  baud: 9600
+
+database:
+  path: /var/lib/chasing-tail/sightings.db
+  retention_days: 14        # starší záznamy se automaticky mažou (GDPR)
+
+analysis:
+  window_hours: 2           # jak daleko zpět analyzovat
+  suspicion_threshold: 0.55 # skóre 0–1 pro upozornění
+  min_sightings: 3          # min. počet výskytů za okno
+  location_precision: 3     # zaokrouhlení GPS → buňka ~100 m
+  interval_seconds: 60      # jak často spouštět analýzu
+  # Seskupování (telefon + hodinky = jedna osoba)
+  time_bucket_minutes: 2    # délka časového okna (min); 1 je kvůli intervalům
+                            # probe requestů příliš jemné, ≥3 slučuje nesouvisející
+  min_shared_buckets: 5     # min. počet společných oken
+  min_phi: 0.50             # korelace přítomnosti: objevují se a mizí spolu
+  min_jaccard: 0.90         # záložní pravidlo pro zařízení přítomná téměř pořád
+  # Trvale ignorovaná zařízení. Pohodlnější je dashboard: tlačítko
+  # „Ignorovat vše současné“ (odrušení okolí) nebo „Ignorovat“ u osoby.
+  ignore_macs: []
+  #  - "AA:BB:CC:DD:EE:FF"
+
+alerts:
+  enabled: true
+  ntfy_topic: ""            # push na telefon přes ntfy.sh (zvolte tajný název)
+  pushbullet_token: ""      # volitelné push notifikace
+  log_file: /var/log/chasing-tail/alerts.log
+  cooldown_minutes: 30      # min. čas mezi opakovanými upozorněními
+
+web:
+  host: 0.0.0.0
+  port: 5000
+  debug: false
+  username: admin
+  password: ""              # POVINNÉ při host 0.0.0.0, jinak se dashboard nespustí
+
+logging:
+  level: INFO
+  file: /var/log/chasing-tail/daemon.log

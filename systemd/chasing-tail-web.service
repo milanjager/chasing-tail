@@ -1,0 +1,14 @@
+[Unit]
+Description=Chasing Your Tail – webový dashboard
+After=network.target chasing-tail.service
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/chasing-tail
+ExecStart=/opt/chasing-tail/venv/bin/python -m web.app
+Restart=on-failure
+RestartSec=5
+User=root
+
+[Install]
+WantedBy=multi-user.target

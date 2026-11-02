@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chasing Your Tail</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <header>
+    <h1>Chasing Your Tail</h1>
+    <span id="updated" class="muted"></span>
+  </header>
+
+  <main>
+    <section class="stats">
+      <div class="stat"><span id="s-devices">–</span><label>zařízení</label></div>
+      <div class="stat"><span id="s-persons">–</span><label>osob</label></div>
+      <div class="stat"><span id="s-groups">–</span><label>skupin (více zařízení)</label></div>
+      <div class="stat warn"><span id="s-suspicious">–</span><label>podezřelých</label></div>
+      <div class="stat"><span id="s-ignored">–</span><label>ignorovaných</label></div>
+    </section>
+
+    <section class="card calib">
+      <div class="calib-main">
+        <div>
+          <h2>Odrušení okolí</h2>
+          <p class="muted small">Jako při hledání štěnic: nejdřív zaznamenejte, co je kolem vás normálně
+            (váš router, vaše zařízení, sousedé), a jedním klikem to všechno ignorujte.
+            Potom se vyhodnocuje jen to, co přibude.</p>
+        </div>
+        <div class="calib-controls">
+          <label class="small">Zařízení viděná za
+            <select id="amb-minutes">
+              <option value="2">poslední 2 minuty</option>
+              <option value="5" selected>posledních 5 minut</option>
+              <option value="15">posledních 15 minut</option>
+              <option value="60">poslední hodinu</option>
+            </select>
+          </label>
+          <span id="amb-count" class="amb-count">–</span>
+          <button id="amb-ignore" class="btn primary">Ignorovat vše současné</button>
+          <button id="amb-clear" class="btn ghost">Zrušit odrušení</button>
+        </div>
+      </div>
+      <p id="calib-msg" class="small calib-msg" role="status"></p>
+
+      <details id="ign-details">
+        <summary>Seznam ignorovaných (<span id="ign-count">0</span>)</summary>
+        <form id="ign-form" class="ign-form">
+          <input id="ign-mac" placeholder="AA:BB:CC:DD:EE:FF" aria-label="MAC adresa" autocomplete="off" spellcheck="false">
+          <input id="ign-label" placeholder="popis, např. moje hodinky" aria-label="Popis" maxlength="60">
+          <button class="btn">Přidat</button>
+        </form>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>MAC</th><th>Popis</th><th>Zdroj</th><th>Přidáno</th><th></th></tr></thead>
+            <tbody id="ignored"></tbody>
+          </table>
+        </div>
+        <p class="muted small">Telefony s náhodnou MAC si adresu časem mění. Po změně se objeví
+          znovu jako nové zařízení, proto odrušení občas zopakujte.</p>
+      </details>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <div class="card-head">
+          <h2>Osoby v okolí</h2>
+          <label class="toggle"><input type="checkbox" id="only-susp"> jen podezřelé</label>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Osoba</th><th>Zařízení</th><th>Skóre</th><th>Výskyty</th><th>Naposledy</th><th></th></tr>
+            </thead>
+            <tbody id="persons"></tbody>
+          </table>
+        </div>
+        <p class="muted small">Skupina = zařízení, která se objevují ve stejných minutách
+          (např. telefon + hodinky). Práh podezřelosti: {{ threshold }}.</p>
+      </div>
+
+      <div class="card">
+        <h2>Trasa a výskyty</h2>
+        <div id="map"></div>
+        <p class="muted small" id="map-hint">Kliknutím na osobu zobrazíte, kde byla vidět.</p>
+      </div>
+
+      <div class="card wide">
+        <h2>Upozornění</h2>
+        <ul id="alerts" class="alerts"></ul>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

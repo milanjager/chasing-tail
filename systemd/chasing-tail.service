@@ -1,0 +1,17 @@
+[Unit]
+Description=Chasing Your Tail – skener Wi-Fi/BT/GPS
+After=network.target bluetooth.target gpsd.service
+Wants=bluetooth.target gpsd.service
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/chasing-tail
+ExecStartPre=/opt/chasing-tail/scripts/monitor-mode.sh wlan1
+ExecStart=/opt/chasing-tail/venv/bin/python -m daemon.main
+Restart=on-failure
+RestartSec=10
+# Sniffing vyžaduje root (raw sockety)
+User=root
+
+[Install]
+WantedBy=multi-user.target
