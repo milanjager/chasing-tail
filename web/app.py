@@ -9,6 +9,7 @@ from flask import Flask, Response, jsonify, render_template, request
 
 from daemon.config import load_config
 from daemon.database import Database
+from daemon.wigle import WigleClient
 
 
 MAC_RE = re.compile(r"^([0-9A-F]{2}:){5}[0-9A-F]{2}$")
@@ -28,6 +29,7 @@ def create_app(db: Database, cfg: dict) -> Flask:
     web = cfg.get("web", {})
     password = web.get("password", "")
     username = web.get("username", "admin")
+    wigle = WigleClient(cfg)
 
     @app.before_request
     def require_auth():
@@ -165,6 +167,17 @@ def create_app(db: Database, cfg: dict) -> Flask:
     @app.get("/api/alerts")
     def alerts():
         return jsonify([dict(r) for r in db.get_alerts(100)])
+
+    @app.get("/api/wigle/<mac>")
+    def wigle_lookup(mac):
+        if not MAC_RE.match(mac.upper()):
+            return jsonify({"error": "neplatná MAC"}), 400
+        row = db.get_device(mac)
+        source = row["source"] if row else "wifi"
+        data = wigle.lookup(mac, source)
+        if data is None:
+            return jsonify({"error": "WiGLE není dostupné"}), 503
+        return jsonify({**data, "wigle_simulated": wigle.simulated})
 
     @app.get("/api/track")
     def track():
